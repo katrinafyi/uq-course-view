@@ -3,11 +3,66 @@
 
 <head>
   <title>UQ Course View</title>
-  
-  <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma.min.css"
+    integrity="sha256-aPeK/N8IHpHsvPBCf49iVKMdusfobKo2oxF8lRruWJg=" crossorigin="anonymous" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.15.1-0/firebase.min.js"
+    integrity="sha256-M5k/0h+AQmxtpOj5uXFDO75vOgRRRlV30a9ZswcFSl8=" crossorigin="anonymous"></script>
+  <script src="./firebase-config.js"></script>
+  <script src="./main.js"></script>
+  <script src="./admin.js"></script>
 </head>
 
 <body>
+  <header>
+    <nav class="navbar is-spaced" role="navigation" aria-label="main navigation">
+      <div class="container">
+      <div class="navbar-brand">
+        <span class="navbar-item">
+          <b>
+            UQ Course Viewer
+          </b>
+        </span>
+      </div>
+      <div class="navbar-menu">
+        <div class="navbar-start">
+          <span class="navbar-item">
+            asdf
+          </span>
+        </div>
+      </div>
+    </div>
+    </nav>
+  </header>
+
+  <section class="section">
+    
+    <div class="container">
+      <form action="" style="max-width: 20rem;">
+        <div class="field">
+          <label class="label">Course code</label>
+          <div class="control">
+            <input class="input" type="text" placeholder="">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Course name</label>
+          <div class="control">
+            <input class="input" type="text" placeholder="">
+          </div>
+        </div>
+        
+        <button type="submit" class="button is-link">Search</button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>
+      <small>Built by <a href="https://kentonlam.xyz">Kenton Lam</a>.</small>
+    </p>
+  </footer>
 
 </body>
 
