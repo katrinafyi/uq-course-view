@@ -9,6 +9,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.15.1-0/firebase.min.js"
     integrity="sha256-M5k/0h+AQmxtpOj5uXFDO75vOgRRRlV30a9ZswcFSl8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.11/pako.min.js"
+    integrity="sha256-Kc+gVCuYZLZkDP3MjxWxhNtkMbUy2ycCo86X5fKn/Bw=" crossorigin="anonymous"></script>
   <script src="./firebase-config.js"></script>
   <script src="./main.js"></script>
   <script src="./admin.js"></script>
@@ -18,26 +20,26 @@
   <header>
     <nav class="navbar is-spaced" role="navigation" aria-label="main navigation">
       <div class="container">
-      <div class="navbar-brand">
-        <span class="navbar-item">
-          <b>
-            UQ Course Viewer
-          </b>
-        </span>
-      </div>
-      <div class="navbar-menu">
-        <div class="navbar-start">
+        <div class="navbar-brand">
           <span class="navbar-item">
-            asdf
+            <b>
+              UQ Course Viewer
+            </b>
           </span>
         </div>
+        <div class="navbar-menu">
+          <div class="navbar-start">
+            <span class="navbar-item">
+              asdf
+            </span>
+          </div>
+        </div>
       </div>
-    </div>
     </nav>
   </header>
 
   <section class="section">
-    
+
     <div class="container">
       <form action="" style="max-width: 20rem;">
         <div class="field">
@@ -52,7 +54,7 @@
             <input class="input" type="text" placeholder="">
           </div>
         </div>
-        
+
         <button type="submit" class="button is-link">Search</button>
       </form>
     </div>
