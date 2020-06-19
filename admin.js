@@ -18,15 +18,15 @@ function fetchHTML(url, cors=true) {
   });
 }
 
-/** @returns {Promise<Course>} */
-function updateList() {
+/** @returns {Promise<Course[]>} */
+function fetchCourseList() {
   return fetchHTML(COURSE_LIST_URL).then(doc => {
     const courseData = Object.fromEntries(Array.from(doc.querySelectorAll('.listing a.code'))
     .map(x => {
       const code = x.textContent.trim();
       const d = {code, name: x.nextElementSibling.textContent.trim(), currentOfferings: []};
-      d.level = doc.getElementById(`course-${code}-level`)?.textContent?.trim();
-      d.units = doc.getElementById(`course-${code}-units`)?.textContent?.trim();
+      d.level = doc.getElementById(`course-${code}-level`)?.textContent?.trim() || null;
+      d.units = doc.getElementById(`course-${code}-units`)?.textContent?.trim() || null;
       return [code, d];
     }));
 
@@ -41,11 +41,6 @@ function updateList() {
         mode: a.parentElement.nextElementSibling.nextElementSibling.textContent.trim(),
       });
     });
-
-    window.da = courseData;
-    const s = pako.deflate(JSON.stringify(courseData), {to: 'string'});
-
-    cacheRef.doc('list').set({deflate: s}).then(console.log);
 
     // let batch = null;
     // for (let i = 0; i < codes.length; i++) {
@@ -65,6 +60,12 @@ function updateList() {
   });
 }
 
+async function updateCourseList() {
+  const data = await fetchCourseList();
+  const s = pako.deflate(JSON.stringify(data), {to: 'string'});
+  cacheRef.doc('courses').set({data: s, updated: firebase.firestore.Timestamp.now()});
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -79,6 +80,8 @@ function shuffleArray(array) {
   }
   return array;
 }
+
+
 
 /** @returns {Offering[]} */
 function parseOfferings(table, archived) {
@@ -101,47 +104,62 @@ function parseOfferings(table, archived) {
 }
 
 /** @returns {Promise<Course>} */
-function updateOne(code) {
+async function fetchOneCourse(code, force=false) {
   const basics = ['level', 'faculty', 'school', 'units', 'duration', 'contact',
    'incompatible', 'prerequisite', 'assessment-methods', 'coordinator', 'studyabroad'];
 
-  return fetchHTML(COURSE_PAGE_URL + code)
-  .then(doc => {
-    const get = x => doc.getElementById('course-' + x);
+  const doc = await fetchHTML(COURSE_PAGE_URL + code);
+  const get = x => doc.getElementById('course-' + x);
 
-    const d = {};
-    d.code = code;
-    d.name = get('title').textContent.trim().replace(` (${code})`, '');
-    basics.forEach(x => {
-      d[x] = get(x)?.textContent?.trim();
-    });
+  const d = {};
+  d.code = code;
+  d.name = get('title').textContent.trim().replace(` (${code})`, '');
+  basics.forEach(x => {
+    d[x] = get(x)?.textContent?.trim() || null;
+  });
 
-    if (!d.studyabroad) {
-      d.studyabroad = get('studyabroard')?.textContent?.trim();
+  if (!d.studyabroad) {
+    d.studyabroad = get('studyabroard')?.textContent?.trim() || null;
+  }
+
+  d.description = get('summary').textContent.trim() || null;
+  d.offerings = [
+    ...parseOfferings(get('current-offerings'), false),
+    ...parseOfferings(get('archived-offerings'), true)];
+
+  return d;
+}
+
+async function updateCourseDetails(codes = null, force = false) {
+  
+  if (codes == null) {
+    codes = state.codes;
+    console.log(`Using ${codes.length} course codes from state.`);
+  }
+  
+  shuffleArray(codes);
+
+  for (const code of codes) {
+
+    const docRef = coursesRef.doc(code);
+    const interval = 1000 * 60 * 60 * 24; // 24 hours in milliseconds
+
+    const old = (await docRef.get()).data();
+    if (force || old?.updated == null || Date.now() - old.updated.toMillis() > interval) {
+
+      console.log(`Updating course details for ${code}, last updated ${old.updated?.toDate()}.`);
+      const details = await fetchOneCourse(code);
+      details.updated = firebase.firestore.FieldValue.serverTimestamp();
+      
+      await docRef.set(details);
+      await sleep(5000);
+
+    } else {
+
+      console.log(`Already up to date for ${code}, last updated ${old.updated?.toDate()}.`);
+
     }
 
-    d.description = get('summary').textContent.trim();
-    d.offerings = [
-      ...parseOfferings(get('current-offerings'), false),
-      ...parseOfferings(get('archived-offerings'), true)];
-
-    d.updated = new Date();
-
-    console.log(d);
-    return d;
-  });
-}
-
-/** @returns {Promise<Course[]>} */
-async function updateDetails(codes) {
-  const result = [];
-  for (const c of codes) {
-    result.push(await updateOne(c));
-    await sleep(5000);
   }
-  return result;
 }
 
-updateList()
-.then(x => shuffleArray(Object.keys(x)))
-.then(courses => updateDetails(courses));

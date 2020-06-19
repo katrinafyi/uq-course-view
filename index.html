@@ -9,9 +9,11 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.15.1-0/firebase.min.js"
     integrity="sha256-M5k/0h+AQmxtpOj5uXFDO75vOgRRRlV30a9ZswcFSl8=" crossorigin="anonymous"></script>
+  <script src="./firebase-config.js"></script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.11/pako.min.js"
     integrity="sha256-Kc+gVCuYZLZkDP3MjxWxhNtkMbUy2ycCo86X5fKn/Bw=" crossorigin="anonymous"></script>
-  <script src="./firebase-config.js"></script>
+
   <script src="./main.js"></script>
   <script src="./admin.js"></script>
 </head>
@@ -41,29 +43,57 @@
   <section class="section">
 
     <div class="container">
-      <form action="" style="max-width: 20rem;">
-        <div class="field">
-          <label class="label">Course code</label>
-          <div class="control">
-            <input class="input" type="text" placeholder="">
+      <div class="columns">
+        <div class="column is-3-desktop is-4">
+          <div class="field">
+            <label class="label">Course code</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="">
+            </div>
           </div>
         </div>
-        <div class="field">
-          <label class="label">Course name</label>
-          <div class="control">
-            <input class="input" type="text" placeholder="">
+        <div class="column is-6-desktop is-8">
+          <div class="field">
+            <label class="label">Course name</label>
+            <div class="control">
+              <input class="input" type="text" placeholder="">
+            </div>
           </div>
         </div>
+      </div>
+      <button type="submit" class="button is-link">Search</button>
 
-        <button type="submit" class="button is-link">Search</button>
-      </form>
+      <hr>
+
+      <template id="course-row">
+        <tr>
+          <th class="code"></th>
+          <td class="name"></td>
+          <td class="units"></td>
+          <td class="offerings"></td>
+        </tr>
+      </template> 
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Units</th>
+            <th>Offerings</th>
+          </tr>
+        </thead>
+        <tbody id="results">
+        </tbody>
+      </table>
+
     </div>
   </section>
 
   <footer class="footer">
-    <p>
-      <small>Built by <a href="https://kentonlam.xyz">Kenton Lam</a>.</small>
-    </p>
+    <div class="container">
+      Built by <a href="https://kentonlam.xyz">Kenton Lam</a>.
+    </div>
   </footer>
 
 </body>
